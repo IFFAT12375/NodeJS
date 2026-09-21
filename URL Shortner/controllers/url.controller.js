@@ -1,4 +1,5 @@
 const URL = require("../models/url.model");
+const User = require("../models/user.model")
 const { nanoid } = require("nanoid");
 
 async function getUrls(req, res) {
@@ -24,7 +25,8 @@ async function createUrl(req, res) {
 
     const url = await URL.create({
         originalUrl,
-        shortId
+        shortId,
+        createdBy: req.User._id
     });
     return res.status(201).json(url);
 }

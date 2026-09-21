@@ -3,6 +3,8 @@ const { nanoid } = require("nanoid");
 const URL = require("../models/url.model");
 const bcrypt = require("bcrypt");
 const User = require("../models/user.model");
+const sessions = require("../sessions")
+const requireAuth = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -56,13 +58,38 @@ router.post("/login", async (req, res) => {
         return res.status(401).send("Invalid name or password");
     }
 
+    const sessionId = nanoid(32);
+
+    sessions.set(sessionId, user._id.toString());
+
+    res.cookie("sessionId", sessionId);
+
+    // console.log("SESSION CREATED:", sessionId, typeof sessionId);
+    // console.log("SESSION STORE:", sessions, typeof sessions);
+    //  console.log("SESSION STORE:", sessions, typeof user._id.toString());
+
     return res.redirect("/");
 });
 
-// Home page
-router.get("/", async (req, res) => {
+router.get("/logout", (req, res) => {
 
-    const urls = await URL.find();
+    const sessionId = req.cookies.sessionId;
+
+    if (sessionId) {
+        sessions.delete(sessionId);
+    }
+
+    res.clearCookie("sessionId");
+
+    return res.redirect("/login");
+});
+
+// Home page
+router.get("/", requireAuth,async (req, res) => {
+
+    const urls = await URL.find({
+    createdBy: req.user._id
+});
 
     res.render("home", {
         urls
@@ -70,7 +97,7 @@ router.get("/", async (req, res) => {
 });
 
 // Create short URL
-router.post("/shorten", async (req, res) => {
+router.post("/shorten", requireAuth,async (req, res) => {
 
     const { originalUrl } = req.body;
 
@@ -78,7 +105,8 @@ router.post("/shorten", async (req, res) => {
 
     await URL.create({
         originalUrl,
-        shortId
+        shortId,
+        createdBy: req.user._id
     });
 
    return res.redirect("/");

@@ -4,12 +4,14 @@ const connectDB = require("./connection");
 const staticRoutes = require("./routes/static.route");
 // const authRoutes = require("./routes/  auth.route");
 const path = require("path");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const PORT = 8000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
