@@ -1,4 +1,5 @@
 const URL = require("../models/url.model");
+const { nanoid } = require("nanoid");
 
 async function getUrls(req, res) {
     const urls = await URL.find();
@@ -18,13 +19,14 @@ async function getUrlById(req, res) {
 }
 
 async function createUrl(req, res) {
-    const { originalUrl, shortId } = req.body;
+    const { originalUrl } = req.body;
+    const shortId = nanoid(6);
 
     const url = await URL.create({
         originalUrl,
         shortId
     });
-    return res.status(200).json(url);
+    return res.status(201).json(url);
 }
 
 module.exports = {

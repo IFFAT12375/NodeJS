@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>URL Shortener</title>
+</head>
+
+<body>
+
+    <h1>URL Shortener</h1>
+
+    <form action="/shorten" method="POST">
+
+        <input
+            type="text"
+            name="originalUrl"
+            placeholder="Enter your URL"
+            required
+        >
+
+        <button type="submit">
+            Shorten URL
+        </button>
+
+    </form>
+
+
+    <h2>Shortened URLs</h2>
+
+    <table border="1">
+
+        <thead>
+            <tr>
+                <th>Original URL</th>
+                <th>Short URL</th>
+                <th>Clicks</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <% urls.forEach((url) => { %>
+
+                <tr>
+
+                    <td>
+                        <%= url.originalUrl %>
+                    </td>
+
+                    <td>
+                        <a href="/<%= url.shortId %>">
+                            http://localhost:8000/<%= url.shortId %>
+                        </a>
+                    </td>
+
+                    <td>
+                        <%= url.clicks %>
+                    </td>
+
+                </tr>
+
+            <% }) %>
+
+        </tbody>
+
+    </table>
+
+</body>
+
+</html>
