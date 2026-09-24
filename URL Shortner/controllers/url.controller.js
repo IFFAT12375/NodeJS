@@ -1,38 +1,53 @@
 const URL = require("../models/url.model");
-const User = require("../models/user.model")
 const { nanoid } = require("nanoid");
 
-async function getUrls(req, res) {
-    const urls = await URL.find();
-    return res.status(200).json(urls);
-}
-
 async function getUrlById(req, res) {
-    const url = await URL.findById(req.params.id);
+  const shortId = req.params.shortId;
+  const result = await URL.findOne({ shortId });
 
-    if (!url) {
-        return res.status(404).json({
-            message: "URL not found"
-        });
-    }
+  if (!result) {
+    return res.status(404).json({ error: "URL not found" });
+  }
 
-    return res.status(200).json(url);
+  return res.json({
+    totalClicks: result.clicks,
+    shortId: result.shortId,
+    originalUrl: result.originalUrl,
+  });
 }
 
 async function createUrl(req, res) {
-    const { originalUrl } = req.body;
-    const shortId = nanoid(6);
+  const body = req.body;
 
-    const url = await URL.create({
-        originalUrl,
-        shortId,
-        createdBy: req.User._id
-    });
-    return res.status(201).json(url);
+  if (!body.originalUrl) return res.status(400).json({ error: "url is required" });
+
+  const shortId = nanoid(6);
+
+  await URL.create({
+    originalUrl: body.originalUrl,
+    shortId,
+    createdBy: req.user._id,
+  });
+
+  return res.redirect("/");
+}
+
+async function redirectToUrl(req, res) {
+  const url = await URL.findOneAndUpdate(
+    { shortId: req.params.shortId },
+    { $inc: { clicks: 1 } },
+    { new: true }
+  );
+
+  if (!url) {
+    return res.status(404).send("Short URL not found");
+  }
+
+  return res.redirect(url.originalUrl);
 }
 
 module.exports = {
-    getUrls,
     getUrlById,
-    createUrl
+    createUrl,
+  redirectToUrl,
 };

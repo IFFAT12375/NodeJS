@@ -1,10 +1,11 @@
 const express = require("express");
 const connectDB = require("./connection");
-// const urlRoutes = require("./routes/url.route");
+const urlRoutes = require("./routes/url.route");
 const staticRoutes = require("./routes/static.route");
-// const authRoutes = require("./routes/  auth.route");
+const authRoutes = require("./routes/user.route");
 const path = require("path");
 const cookieParser = require("cookie-parser");
+require("dotenv").config();
 
 const app = express();
 const PORT = 8000;
@@ -24,8 +25,8 @@ connectDB("mongodb://localhost:27017/mydb1");
 //     });
 // });
 
-// app.use("/auth", authRoutes);
-// app.use("/api/urls", urlRoutes);
+app.use("/auth", authRoutes);
+app.use("/urls", urlRoutes);
 app.use("/", staticRoutes)
 
 app.listen(PORT, () => {
