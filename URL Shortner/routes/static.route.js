@@ -55,7 +55,7 @@ router.get(
     ? {}
     : { createdBy: req.user._id };
 
-  const urls = await URL.find(query);
+  const urls = await URL.find(query).populate("createdBy", "name role");
 
     res.render("home", {
       urls,

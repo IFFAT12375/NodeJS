@@ -37,6 +37,8 @@
                 <th>Original URL</th>
                 <th>Short URL</th>
                 <th>Clicks</th>
+                    <th>Creator</th>
+                    <th>Role</th>
             </tr>
         </thead>
 
@@ -58,6 +60,12 @@
 
                     <td>
                         <%= url.clicks %>
+                    </td>
+                      <td>
+                        <%= url.createdBy.name %>
+                    </td>
+                    <td>
+                        <%= url.createdBy.role %>
                     </td>
 
                 </tr>
