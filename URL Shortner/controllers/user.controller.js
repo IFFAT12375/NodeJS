@@ -55,6 +55,7 @@ async function login(req, res) {
   const token = jwt.sign(
     {
       userId: user._id.toString(),
+      role: user.role,
     },
     jwtSecret,
     {

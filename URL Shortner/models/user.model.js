@@ -9,8 +9,12 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
-    }
-    
+    },
+     role: { 
+    type: String, 
+    default: 'NORMAL',
+    enum: ['NORMAL', 'ADMIN']
+  }
 });
 
 const User = mongoose.model("User", userSchema);

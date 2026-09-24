@@ -1,6 +1,7 @@
 const express = require("express");
 const URL = require("../models/url.model");
 const requireAuth = require("../middleware/auth");
+const requireRole = require("../middleware/role");
 const { register, login } = require("../controllers/user.controller");
 const {
   createUrl,
@@ -45,17 +46,24 @@ router.get("/logout", (req, res) => {
 });
 
 // Home page
-router.get("/", requireAuth, async (req, res) => {
-  const urls = await URL.find({
-    createdBy: req.user._id,
-  });
+router.get(
+  "/",
+  requireAuth,
+  requireRole("NORMAL", "ADMIN"),
+  async (req, res) => {
+  const query = req.user.role === "ADMIN"
+    ? {}
+    : { createdBy: req.user._id };
 
-  res.render("home", {
-    urls,
-  });
-});
+  const urls = await URL.find(query);
 
-router.post("/shorten", requireAuth, createUrl);
+    res.render("home", {
+      urls,
+    });
+  },
+);
+
+router.post("/shorten", requireAuth, requireRole("NORMAL", "ADMIN"), createUrl);
 
 router.get("/:shortId", redirectToUrl);
 
